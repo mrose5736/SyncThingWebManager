@@ -51,7 +51,26 @@ export function shortDeviceId(id: string): string {
     return id.length > 8 ? `${id.slice(0, 8)}…` : id;
 }
 
-/** Generate a random UUID v4 (for new server IDs) */
+/** Generate a random UUID v4 — works in all contexts including plain HTTP LAN access.
+ *  crypto.randomUUID() requires a secure context (HTTPS/localhost); this falls back
+ *  to crypto.getRandomValues() which is available everywhere, even over HTTP. */
 export function uuid(): string {
-    return crypto.randomUUID();
+    // Secure context (HTTPS / localhost)
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+    // Non-secure context (plain HTTP) — getRandomValues works everywhere
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+        bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant
+        const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+    // Last resort fallback
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+    });
 }
