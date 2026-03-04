@@ -119,7 +119,11 @@ npm install --include=dev
 export PATH="$APP_DIR/node_modules/.bin:$PATH"
 
 info "Building frontend (this may take ~30s)..."
-NODE_ENV=production npm run build
+# Use 'node' to invoke tsc and vite directly — this bypasses execute-bit permission
+# issues on Docker volumes, Synology NAS, noexec mounts, and similar environments
+# where node_modules/.bin symlinks exist but lack the +x flag.
+node "$APP_DIR/node_modules/typescript/bin/tsc" -b \
+  && node "$APP_DIR/node_modules/vite/bin/vite.js" build
 
 success "Build complete — dist/ is ready"
 
