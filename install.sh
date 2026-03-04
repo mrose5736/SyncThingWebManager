@@ -109,11 +109,17 @@ cd "$APP_DIR"
 # ── 4. Install dependencies and build ─────────────────────────────────────────
 header "4/5  Installing Dependencies & Building"
 
+
 info "Running npm install..."
-npm install --production=false
+# npm 7+ includes devDependencies by default; --include=dev is explicit for clarity
+npm install --include=dev
+
+# Ensure locally installed binaries (tsc, vite) are on PATH — critical on some
+# Linux systems where the shell doesn't inherit node_modules/.bin automatically.
+export PATH="$APP_DIR/node_modules/.bin:$PATH"
 
 info "Building frontend (this may take ~30s)..."
-npm run build
+NODE_ENV=production npm run build
 
 success "Build complete — dist/ is ready"
 
