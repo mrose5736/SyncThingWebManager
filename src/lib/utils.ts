@@ -1,0 +1,57 @@
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+/** Utility to combine Tailwind classes safely (shadcn/ui convention) */
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
+
+/** Format bytes to human-friendly string */
+export function formatBytes(bytes: number, decimals = 1): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
+}
+
+/** Format uptime seconds to human-friendly string */
+export function formatUptime(seconds: number): string {
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (d > 0) return `${d}d ${h}h`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+}
+
+/** Return sync percentage (0–100) from folder stats */
+export function calcSyncPercent(globalBytes: number, needBytes: number): number {
+    if (globalBytes === 0) return 100;
+    const synced = globalBytes - needBytes;
+    return Math.max(0, Math.min(100, (synced / globalBytes) * 100));
+}
+
+/** Return overall sync percentage across all folders */
+export function calcOverallSyncPercent(
+    folderStats: Record<string, { globalBytes: number; needBytes: number }>,
+): number {
+    const totals = Object.values(folderStats).reduce(
+        (acc, f) => ({
+            global: acc.global + f.globalBytes,
+            need: acc.need + f.needBytes,
+        }),
+        { global: 0, need: 0 },
+    );
+    return calcSyncPercent(totals.global, totals.need);
+}
+
+/** Truncate device ID for display: first 8 chars + … */
+export function shortDeviceId(id: string): string {
+    return id.length > 8 ? `${id.slice(0, 8)}…` : id;
+}
+
+/** Generate a random UUID v4 (for new server IDs) */
+export function uuid(): string {
+    return crypto.randomUUID();
+}
