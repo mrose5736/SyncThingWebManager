@@ -85,6 +85,21 @@ After install, open the URL shown in the terminal from **any device on your netw
 🌐 Open from your network:  http://10.20.99.132:3001
 ```
 
+### Docker
+
+```bash
+git clone https://github.com/mrose5736/SyncThingWebManager.git
+cd SyncThingWebManager
+docker compose up -d
+```
+
+The app will be available at `http://localhost:3001`. Change the exposed port or bind address by editing `docker-compose.yml`, or build/run the image directly:
+
+```bash
+docker build -t syncthing-central .
+docker run -d -p 3001:3001 --name syncthing-central syncthing-central
+```
+
 ---
 
 ## 🔧 Adding a Server

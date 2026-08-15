@@ -1,0 +1,10 @@
+services:
+  syncthing-central:
+    build: .
+    container_name: syncthing-central
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - HOST=0.0.0.0
+    restart: unless-stopped
