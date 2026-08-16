@@ -20,10 +20,11 @@ Run the same checks CI runs:
 ```bash
 npm run lint
 npm run typecheck
+npm run test
 npm run build
 ```
 
-Test your change manually against at least one real (or locally running) Syncthing instance — there's no automated test suite yet, so manual verification is the main safety net.
+`npm run test:watch` re-runs tests on file changes while you work; `npm run test:coverage` generates a coverage report. Tests currently cover `lib/` and `store/serverStore.ts` — the highest-value, most logic-heavy parts of the app. There's no UI/component test coverage yet, so still test any UI change manually against at least one real (or locally running) Syncthing instance.
 
 ## Making changes
 

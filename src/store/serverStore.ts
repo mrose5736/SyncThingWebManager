@@ -4,6 +4,7 @@ import type { ServerConfig, ServerHealth, FolderStats, SyncthingConfig, DeviceCo
 import { SyncthingClient } from '@/lib/syncthingApi';
 import { SyncthingApiError } from '@/lib/apiError';
 import { DEMO_MODE } from '@/lib/demoMode';
+import { uuid } from '@/lib/utils';
 
 const DEMO_SERVERS: Omit<ServerConfig, 'id'>[] = [
     { name: 'Demo NAS', url: 'http://demo-nas.local:8384', apiKey: 'demo' },
@@ -63,7 +64,7 @@ export const useServerStore = create<ServerStore>()(
 
             // ─── CRUD ───────────────────────────────────────────────────────────────
             addServer: (cfg) => {
-                const id = crypto.randomUUID();
+                const id = uuid();
                 const server: ServerConfig = { id, ...cfg };
                 set((s) => ({
                     servers: [...s.servers, server],

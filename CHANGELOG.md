@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - GitHub Pages deployment for the public demo (`.github/workflows/deploy-demo.yml`) — builds and publishes the demo bundle as static files on every push to `main`, no server required since demo mode makes no real network calls
 - `HashRouter` used instead of `BrowserRouter` in demo mode, and a configurable `VITE_BASE_PATH` build-time Vite `base`, so the demo works correctly at a GitHub Pages project-page subpath
+- Test suite (Vitest + React Testing Library) covering `lib/syncthingApi.ts`, `lib/mockData.ts`, `lib/apiError.ts`, `lib/utils.ts`, and `store/serverStore.ts` — 57 tests, wired into CI
+
+### Fixed
+- `serverStore.addServer` called `crypto.randomUUID()` directly instead of the `uuid()` fallback helper added for non-secure (plain HTTP) contexts, silently defeating that fallback for the app's primary documented use case (LAN access over `http://`)
 
 ## [0.2.0] - 2026-08-16
 
