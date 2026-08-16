@@ -234,6 +234,8 @@ SyncThingWebManager/
 | **Proxy exposure** | The proxy will forward to any URL/API key a client sends it (this is how it avoids browser CORS). It has no allowlist, so it must never be reachable from an untrusted network — see [SECURITY.md](SECURITY.md). |
 | **Network binding** | In production, the server binds to `0.0.0.0`. Restrict with a firewall if needed, or set `HOST=127.0.0.1 npm start` to limit to localhost only. |
 
+**Known dependency issue:** `react-router-dom` 6.x has two moderate advisories ([GHSA-wrjc-x8rr-h8h6](https://github.com/advisories/GHSA-wrjc-x8rr-h8h6), [GHSA-337j-9hxr-rhxg](https://github.com/advisories/GHSA-337j-9hxr-rhxg)) fixed only in the 7.x major. Not auto-upgraded here since it's a breaking change; [Dependabot](.github/dependabot.yml) will open a PR for it so it can be reviewed and tested rather than applied blind. Track via `npm audit`.
+
 ---
 
 ## 🛠️ Tech Stack
