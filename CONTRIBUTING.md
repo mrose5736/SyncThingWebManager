@@ -1,6 +1,6 @@
 # Contributing to Syncthing Central
 
-Thanks for considering a contribution! This is a small project, so the process is intentionally light.
+Thanks for considering a contribution! This is a small project, so the process is intentionally light. By participating, you're expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Getting set up
 

@@ -13,9 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test suite (Vitest + React Testing Library) covering `lib/syncthingApi.ts`, `lib/mockData.ts`, `lib/apiError.ts`, `lib/utils.ts`, and `store/serverStore.ts` — 57 tests, wired into CI
 - Top-level React error boundary (`components/ErrorBoundary.tsx`) — an uncaught render error now shows a recoverable "Something went wrong" screen with a reload button instead of a blank page, since this app is meant to run unattended as a monitoring dashboard
 - Dependabot configuration (`.github/dependabot.yml`) for weekly automated dependency PRs (npm, GitHub Actions, Docker base image), so upgrades like the react-router v7 fix below get surfaced individually for review rather than needing a manual audit
+- `CODE_OF_CONDUCT.md` (Contributor Covenant v2.1)
 
 ### Fixed
 - `serverStore.addServer` called `crypto.randomUUID()` directly instead of the `uuid()` fallback helper added for non-secure (plain HTTP) contexts, silently defeating that fallback for the app's primary documented use case (LAN access over `http://`)
+
+### Security
+- Upgraded `react-router-dom` 6 → 7, resolving two moderate-severity advisories ([GHSA-wrjc-x8rr-h8h6](https://github.com/advisories/GHSA-wrjc-x8rr-h8h6), [GHSA-337j-9hxr-rhxg](https://github.com/advisories/GHSA-337j-9hxr-rhxg)). `npm audit` is now clean. Verified both routing modes manually (`BrowserRouter` for self-hosted, `HashRouter` for the static demo) — no API changes needed since the app only uses the classic declarative router, not v7's framework mode.
 
 ## [0.2.0] - 2026-08-16
 
