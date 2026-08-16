@@ -9,6 +9,8 @@ import type {
     ConfigFolder,
     DeviceConnections,
 } from '@/types/syncthing';
+import { DEMO_MODE } from './demoMode';
+import { getMockResponse, applyMockFolderUpdate } from './mockData';
 
 /**
  * Typed REST API client for a single Syncthing instance.
@@ -42,6 +44,18 @@ export class SyncthingClient {
         path: string,
         options: { method?: string; body?: unknown; signal?: AbortSignal } = {},
     ): Promise<T> {
+        // Demo mode never touches the network — everything, including whatever
+        // URL/API key the user types in, is served from in-memory mock data.
+        if (DEMO_MODE) {
+            const method = options.method ?? 'GET';
+            if (method === 'PUT' && path.startsWith('/rest/config/folders/')) {
+                applyMockFolderUpdate(this.baseUrl, options.body as ConfigFolder);
+            }
+            // Simulate realistic network latency so the UI doesn't feel instant/fake.
+            await new Promise((r) => setTimeout(r, 150 + Math.random() * 250));
+            return getMockResponse<T>(this.baseUrl, path, method);
+        }
+
         let response: Response;
 
         try {

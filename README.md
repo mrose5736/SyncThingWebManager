@@ -100,6 +100,16 @@ docker build -t syncthing-central .
 docker run -d -p 3001:3001 --name syncthing-central syncthing-central
 ```
 
+### Public demo mode
+
+There's a separate build mode for running a **public, read-only demo** — it seeds two fake servers with mock (constantly-changing) data and never talks to a real Syncthing instance or forwards requests anywhere:
+
+```bash
+docker compose -f docker-compose.demo.yml up -d --build
+```
+
+This sets `VITE_DEMO_MODE=true` at build time (bakes mock data into the frontend, so it never calls the proxy) and `DEMO_MODE=true` at runtime (belt-and-braces: the proxy itself refuses to forward anywhere). See [SECURITY.md](SECURITY.md) for the full threat model before exposing any instance — demo or otherwise — to the public internet; put it behind HTTPS and a rate limiter (e.g. Cloudflare) regardless of mode.
+
 ---
 
 ## 🔧 Adding a Server
@@ -202,7 +212,7 @@ SyncThingWebManager/
 | Concern | Detail |
 |---|---|
 | **API Key storage** | Stored in `localStorage`. Appropriate for a self-hosted, personal tool. Do not serve this app on a public network without adding authentication. |
-| **Proxy exposure** | The proxy only forwards requests to URLs registered by the user in the UI. |
+| **Proxy exposure** | The proxy will forward to any URL/API key a client sends it (this is how it avoids browser CORS). It has no allowlist, so it must never be reachable from an untrusted network — see [SECURITY.md](SECURITY.md). |
 | **Network binding** | In production, the server binds to `0.0.0.0`. Restrict with a firewall if needed, or set `HOST=127.0.0.1 npm start` to limit to localhost only. |
 
 ---

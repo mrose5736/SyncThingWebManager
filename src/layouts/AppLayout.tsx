@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useServerStore } from '@/store/serverStore';
+import { DemoBanner } from '@/components/DemoBanner';
 
 const NAV = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -122,6 +123,7 @@ export function AppLayout() {
 
             {/* ── Main ── */}
             <main className="flex-1 overflow-auto">
+                <DemoBanner />
                 <Outlet />
             </main>
         </div>

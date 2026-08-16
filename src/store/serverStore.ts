@@ -3,6 +3,12 @@ import { persist } from 'zustand/middleware';
 import type { ServerConfig, ServerHealth, FolderStats, SyncthingConfig, DeviceConnections, SystemStatus } from '@/types/syncthing';
 import { SyncthingClient } from '@/lib/syncthingApi';
 import { SyncthingApiError } from '@/lib/apiError';
+import { DEMO_MODE } from '@/lib/demoMode';
+
+const DEMO_SERVERS: Omit<ServerConfig, 'id'>[] = [
+    { name: 'Demo NAS', url: 'http://demo-nas.local:8384', apiKey: 'demo' },
+    { name: 'Demo Laptop', url: 'http://demo-laptop.local:8384', apiKey: 'demo' },
+];
 
 // Default health for a new server
 function defaultHealth(): ServerHealth {
@@ -225,8 +231,12 @@ export const useServerStore = create<ServerStore>()(
                 pollingMs: state.pollingMs,
             }),
             onRehydrateStorage: () => (state) => {
-                // After rehydration, kick off polling for all saved servers
                 if (state) {
+                    // In demo mode, seed a couple of fake servers on first visit
+                    // so the dashboard isn't empty (no real Syncthing needed).
+                    if (DEMO_MODE && state.servers.length === 0) {
+                        DEMO_SERVERS.forEach((cfg) => state.addServer(cfg));
+                    }
                     // Give React time to mount before polling
                     setTimeout(() => state.startAllPolling(), 500);
                 }

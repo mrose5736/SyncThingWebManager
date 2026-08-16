@@ -11,6 +11,15 @@ Syncthing Central is designed for use on a **trusted local network** (home LAN, 
 
 If you need to access this outside your LAN, put it behind a VPN (e.g. WireGuard, Tailscale) or a reverse proxy that adds authentication (e.g. an `nginx`/`Caddy` basic-auth gate, or an identity-aware proxy) — do not port-forward it directly.
 
+### Running a public demo
+
+If you want to show the app off on the public internet (e.g. a project demo site), **do not** run a normal build — use demo mode (`docker compose -f docker-compose.demo.yml up -d --build`, or `VITE_DEMO_MODE=true` at build time / `DEMO_MODE=true` at runtime). In this mode:
+
+- The frontend never issues a real network request — all data is generated client-side in memory.
+- The proxy server refuses every `/proxy` request with `403`, regardless of what's sent, closing off the open-relay risk entirely.
+
+Even so, treat it like any public-facing web app: serve it over HTTPS, put a rate limiter/WAF in front (e.g. Cloudflare), and don't assume a "read-only" demo means it can't be abused for resource exhaustion (basic rate limiting still matters).
+
 ## Reporting a vulnerability
 
 If you find a security issue (e.g. a way to bypass the LAN-only trust model, an injection vector in the proxy, XSS in the dashboard), please report it privately rather than opening a public issue:

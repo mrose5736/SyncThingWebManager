@@ -1,0 +1,19 @@
+services:
+  syncthing-central-demo:
+    build:
+      context: .
+      args:
+        VITE_DEMO_MODE: "true"
+    container_name: syncthing-central-demo
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - HOST=0.0.0.0
+      # Also enforced at build time via VITE_DEMO_MODE; kept here as
+      # explicit belt-and-braces documentation of the running config.
+      - DEMO_MODE=true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped

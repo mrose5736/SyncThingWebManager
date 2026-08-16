@@ -2,6 +2,11 @@
 FROM node:22-alpine AS build
 WORKDIR /app
 
+# Set to "true" to build a public demo bundle that serves mock data and
+# never talks to a real Syncthing instance (see SECURITY.md / README).
+ARG VITE_DEMO_MODE=false
+ENV VITE_DEMO_MODE=${VITE_DEMO_MODE}
+
 COPY package.json package-lock.json ./
 RUN npm ci
 
@@ -12,6 +17,12 @@ RUN npm run build
 FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Must match the build-stage VITE_DEMO_MODE — this one disables the proxy's
+# ability to forward anywhere, as defense-in-depth on top of the frontend
+# never issuing real requests in demo mode.
+ARG VITE_DEMO_MODE=false
+ENV DEMO_MODE=${VITE_DEMO_MODE}
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev

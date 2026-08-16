@@ -28,6 +28,10 @@ const PORT = parseInt(process.env.PORT ?? '3001', 10);
 const HOST = process.env.HOST ?? '0.0.0.0';
 const DIST_DIR = join(__dirname, 'dist');
 const IS_PROD = existsSync(DIST_DIR);
+// Public demo builds serve fake data client-side and never need to reach a
+// real Syncthing instance. Refuse to proxy anywhere in that mode, even if
+// something bypasses the frontend and hits /proxy directly.
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 // In dev mode, allow localhost Vite origin. In prod, same-origin so no CORS needed.
 if (!IS_PROD) {
@@ -40,6 +44,11 @@ app.use(express.json({ limit: '2mb' }));
 // Forwards browser requests to Syncthing instances (avoids browser CORS).
 
 app.post('/proxy', async (req, res) => {
+    if (DEMO_MODE) {
+        res.status(403).json({ error: 'Demo mode: proxying to real servers is disabled.' });
+        return;
+    }
+
     const { url, path, method = 'GET', apiKey, body } = req.body ?? {};
 
     if (!url || !path || !apiKey) {
@@ -79,7 +88,7 @@ app.post('/proxy', async (req, res) => {
 
 // ─── Health check ──────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
-    res.json({ status: 'ok', port: PORT, mode: IS_PROD ? 'production' : 'development' });
+    res.json({ status: 'ok', port: PORT, mode: IS_PROD ? 'production' : 'development', demo: DEMO_MODE });
 });
 
 // ─── Static frontend (production only) ────────────────────────────────────

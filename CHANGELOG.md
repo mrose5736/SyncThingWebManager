@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CONTRIBUTING.md` and `SECURITY.md`
 - Issue and pull request templates
 - Docker / Docker Compose deployment option
+- Public demo mode (`docker-compose.demo.yml`, `VITE_DEMO_MODE`/`DEMO_MODE`) — serves mock data client-side and hard-disables the proxy, so a demo instance can safely run on the public internet
 - This changelog
 
 ### Changed
