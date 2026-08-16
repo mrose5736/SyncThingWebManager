@@ -6,6 +6,8 @@
 
 **A centralized management dashboard for multiple distributed [Syncthing](https://syncthing.net) instances.**
 
+[![Version](https://img.shields.io/badge/version-0.2.0-22c55e?style=flat-square)](CHANGELOG.md)
+[![CI](https://img.shields.io/github/actions/workflow/status/mrose5736/SyncThingWebManager/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/mrose5736/SyncThingWebManager/actions/workflows/ci.yml)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -14,7 +16,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
 
-[Features](#-features) · [Install](#-install) · [Usage](#-adding-a-server) · [Development](#-development) · [Architecture](#-project-structure)
+[Features](#-features) · [Install](#-install) · [Usage](#-adding-a-server) · [Development](#-development) · [Architecture](#-project-structure) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -175,17 +177,31 @@ PORT=8080 npm start
 
 ```
 SyncThingWebManager/
+├── .github/
+│   ├── workflows/ci.yml     # Lint + typecheck + build on push/PR
+│   ├── ISSUE_TEMPLATE/
+│   └── PULL_REQUEST_TEMPLATE.md
 ├── proxy-server.mjs         # Combined Express server (proxy + static serving)
-├── install.sh               # Linux/NAS install script
-├── install.ps1              # Windows PowerShell install script
+├── Dockerfile                # Multi-stage build; VITE_DEMO_MODE build arg for demo mode
+├── docker-compose.yml        # Standard deployment
+├── docker-compose.demo.yml   # Public demo deployment (mock data, proxy disabled)
+├── install.sh                # Linux/NAS install script
+├── install.ps1                # Windows PowerShell install script
+├── eslint.config.js
 ├── vite.config.ts
 ├── tailwind.config.js
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── LICENSE
 └── src/
     ├── types/
     │   └── syncthing.ts     # All TypeScript interfaces for Syncthing REST API
     ├── lib/
     │   ├── syncthingApi.ts  # Typed REST API client (SyncthingClient class)
     │   ├── apiError.ts      # SyncthingApiError with OFFLINE / AUTH / CORS types
+    │   ├── demoMode.ts      # DEMO_MODE flag (from VITE_DEMO_MODE at build time)
+    │   ├── mockData.ts      # Generated fake data used when DEMO_MODE is on
     │   └── utils.ts         # formatBytes, formatUptime, calcSyncPercent, cn()
     ├── store/
     │   └── serverStore.ts   # Zustand store: multi-server state + polling + persistence
@@ -194,7 +210,8 @@ SyncThingWebManager/
     │   ├── GlobalActionBar.tsx    # Cross-server Pause / Resume / Rescan All
     │   ├── AddServerDialog.tsx    # Add / edit server modal with live Test Connection
     │   ├── ConflictViewer.tsx     # Error folder detection with copy-path UI
-    │   └── ServerStatusBadge.tsx  # Animated status pill component
+    │   ├── ServerStatusBadge.tsx  # Animated status pill component
+    │   └── DemoBanner.tsx         # Visible banner shown only when DEMO_MODE is on
     ├── layouts/
     │   └── AppLayout.tsx    # Collapsible sidebar with per-server status dots
     ├── pages/
@@ -230,6 +247,18 @@ SyncThingWebManager/
 | Server / proxy | Express | 5 |
 | Icons | Lucide React | latest |
 | Process manager | PM2 | latest |
+
+---
+
+## 🔢 Versioning
+
+This project follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
+
+- **MAJOR** — breaking changes (config/storage format changes, removed features)
+- **MINOR** — new features, backwards-compatible
+- **PATCH** — bug fixes, backwards-compatible
+
+The current version is tracked in [`package.json`](package.json) and every release is documented in [`CHANGELOG.md`](CHANGELOG.md), which follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format. The project is pre-`1.0.0`: expect the occasional breaking change in a MINOR bump until the API/config format is declared stable at `1.0.0`.
 
 ---
 
