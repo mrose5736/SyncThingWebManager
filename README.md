@@ -112,6 +112,8 @@ docker compose -f docker-compose.demo.yml up -d --build
 
 This sets `VITE_DEMO_MODE=true` at build time (bakes mock data into the frontend, so it never calls the proxy) and `DEMO_MODE=true` at runtime (belt-and-braces: the proxy itself refuses to forward anywhere). See [SECURITY.md](SECURITY.md) for the full threat model before exposing any instance — demo or otherwise — to the public internet; put it behind HTTPS and a rate limiter (e.g. Cloudflare) regardless of mode.
 
+**Free hosting via GitHub Pages:** since demo mode never makes a real network call, it needs no backend at all — it can run as static files. [`.github/workflows/deploy-demo.yml`](.github/workflows/deploy-demo.yml) builds the demo bundle and deploys it to GitHub Pages automatically on every push to `main`. To enable it on your fork: **Settings → Pages → Source → GitHub Actions** (one-time). The demo build uses `HashRouter` instead of `BrowserRouter` so deep links (e.g. `#/server/abc`) work without server-side rewrites, and `VITE_BASE_PATH` is set to the repo name automatically for project-page URLs.
+
 ---
 
 ## 🔧 Adding a Server

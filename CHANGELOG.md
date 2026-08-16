@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- GitHub Pages deployment for the public demo (`.github/workflows/deploy-demo.yml`) — builds and publishes the demo bundle as static files on every push to `main`, no server required since demo mode makes no real network calls
+- `HashRouter` used instead of `BrowserRouter` in demo mode, and a configurable `VITE_BASE_PATH` build-time Vite `base`, so the demo works correctly at a GitHub Pages project-page subpath
+
 ## [0.2.0] - 2026-08-16
 
 ### Added
